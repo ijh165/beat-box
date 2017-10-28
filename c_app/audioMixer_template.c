@@ -54,6 +54,7 @@ void AudioMixer_init(void)
 	//     sound bite.
 	for (int i = 0; i < MAX_SOUND_BITES; i++){
 		soundBites[i]->pSound = NULL;
+		soundBites[i]->location = 0;
 	}
 
 	// Open the PCM output
@@ -242,6 +243,47 @@ void AudioMixer_setVolume(int newVolume)
 //    size: the number of values to store into playbackBuffer
 static void fillPlaybackBuffer(short *playbackBuffer, int size)
 {
+	// the buffer can only hold say up to 2000 samples, every soundbite is a .wav file with up to 80,000 samples
+	// increment the location starting from 0, to the size
+	memset(playbackBuffer, 0, size);
+
+	pthread_mutex_lock(&audioMutex);
+	for(int i = 0; i < MAX_SOUND_BITES; i++) {
+
+		if(soundBites[i]->pSound != NULL) {
+
+			int startIndex = soundBites[i]->location;
+			int locOffSet = startIndex;
+			for (int j = 0; j < size; j++) {
+
+				// CHECK FOR END OF SOUND.WAV ARRAY
+				if (locOffSet > soundBites[i]->pSound->numSamples - 1) {
+					free(soundBites[i]);
+					soundBites[i]->pSound = NULL;
+					soundBites[i]->location = 0;
+					break;
+				}
+
+				int sample = soundBites[i]->pSound->pData[locOffSet];
+				short addedSample = 0;
+
+				// CLAMP
+				if (playbackBuffer[j] + sample > SHRT_MAX) {
+					addedSample = SHRT_MAX;
+				} else if (playbackBuffer[j] + sample < SHRT_MIN) {
+					addedSample = SHRT_MIN;
+				} else {
+					addedSample = playbackBuffer[j] + sample;
+				}
+
+				playbackBuffer[j] = addedSample;
+				locOffSet++;
+			}
+			soundBites[i]->location = startIndex + locOffSet;
+
+		}
+	}
+	pthread_mutex_unlock(&audioMutex);
 	/*
 	 * REVISIT: Implement this
 	 * 1. Wipe the playbackBuffer to all 0's to clear any previous PCM data.
@@ -282,13 +324,6 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 	 *          ... use someNum vs myArray[someIdx].value;
 	 *
 	 */
-
-
-
-
-
-
-
 }
 
 
