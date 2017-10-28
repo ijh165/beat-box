@@ -68,15 +68,6 @@ static void handleCmd(char* cmd)
 		if (strcmp(tokens[0], "stop") == 0) {
 			Udp_sendResponse("Program terminating.\n");
 			stopUdpThread();
-		} else if (strcmp(tokens[0], "get") == 0) {
-			char* arg1 = tokens[1];
-			if (strcmp(arg1, "accelerometer") == 0) {
-				xyz_t vals = Accelerometer_getXYZVals();
-
-				char responseBuffer[BUFFER_LENGTH];
-				sprintf(responseBuffer, "{\"X\": %d, \"Y\": %d, \"Z\": %d}", vals.x, vals.y, vals.z);
-				Udp_sendResponse(responseBuffer);
-			}
 		}
 	}
 

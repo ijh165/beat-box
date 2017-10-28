@@ -1,7 +1,8 @@
 // Incomplete implementation of an audio mixer. Search for "REVISIT" to find things
 // which are left as incomplete.
 // Note: Generates low latency audio on BeagleBone Black; higher latency found on host.
-#include "audioMixer_template.h"
+#include "audio_mixer.h"
+
 #include <alsa/asoundlib.h>
 #include <stdbool.h>
 #include <pthread.h>
@@ -53,8 +54,8 @@ void AudioMixer_init(void)
 	// REVISIT:- Implement this. Hint: set the pSound pointer to NULL for each
 	//     sound bite.
 	for (int i = 0; i < MAX_SOUND_BITES; i++){
-		soundBites[i]->pSound = NULL;
-		soundBites[i]->location = 0;
+		soundBites[i].pSound = NULL;
+		//soundBites[i].location = 0;
 	}
 
 	// Open the PCM output
@@ -143,6 +144,8 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 	assert(pSound->numSamples > 0);
 	assert(pSound->pData);
 
+	printf("numSamples: %d\n", pSound->numSamples);
+
 	// Insert the sound by searching for an empty sound bite spot
 	/*
 	 * REVISIT: Implement this:
@@ -156,21 +159,24 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 	 *    because the application most likely doesn't want to crash just for
 	 *    not being able to play another wave file.
 	 */
-	_Bool slotFound = false;
+
 	pthread_mutex_lock(&audioMutex);
+
+	_Bool slotFound = false;
 	for(int i = 0; i < MAX_SOUND_BITES; i++) {
-		if(soundBites[i]->pSound == NULL){
-			soundBites[i]->pSound = pSound;
+		if(soundBites[i].pSound == NULL) {
+			soundBites[i].pSound = pSound;
 			slotFound = true;
 			break;
 		}
 	}
-	pthread_mutex_unlock(&audioMutex);
 
 	if (!slotFound) {
 		printf("Unable to find empty slot for sound\n");
 		return;
 	}
+
+	pthread_mutex_unlock(&audioMutex);
 }
 
 void AudioMixer_cleanup(void)
@@ -243,47 +249,6 @@ void AudioMixer_setVolume(int newVolume)
 //    size: the number of values to store into playbackBuffer
 static void fillPlaybackBuffer(short *playbackBuffer, int size)
 {
-	// the buffer can only hold say up to 2000 samples, every soundbite is a .wav file with up to 80,000 samples
-	// increment the location starting from 0, to the size
-	memset(playbackBuffer, 0, size);
-
-	pthread_mutex_lock(&audioMutex);
-	for(int i = 0; i < MAX_SOUND_BITES; i++) {
-
-		if(soundBites[i]->pSound != NULL) {
-
-			int startIndex = soundBites[i]->location;
-			int locOffSet = startIndex;
-			for (int j = 0; j < size; j++) {
-
-				// CHECK FOR END OF SOUND.WAV ARRAY
-				if (locOffSet > soundBites[i]->pSound->numSamples - 1) {
-					free(soundBites[i]);
-					soundBites[i]->pSound = NULL;
-					soundBites[i]->location = 0;
-					break;
-				}
-
-				int sample = soundBites[i]->pSound->pData[locOffSet];
-				short addedSample = 0;
-
-				// CLAMP
-				if (playbackBuffer[j] + sample > SHRT_MAX) {
-					addedSample = SHRT_MAX;
-				} else if (playbackBuffer[j] + sample < SHRT_MIN) {
-					addedSample = SHRT_MIN;
-				} else {
-					addedSample = playbackBuffer[j] + sample;
-				}
-
-				playbackBuffer[j] = addedSample;
-				locOffSet++;
-			}
-			soundBites[i]->location = startIndex + locOffSet;
-
-		}
-	}
-	pthread_mutex_unlock(&audioMutex);
 	/*
 	 * REVISIT: Implement this
 	 * 1. Wipe the playbackBuffer to all 0's to clear any previous PCM data.
@@ -324,6 +289,53 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 	 *          ... use someNum vs myArray[someIdx].value;
 	 *
 	 */
+
+	pthread_mutex_lock(&audioMutex);
+
+	for (int iPlaybackBuffer = 0; iPlaybackBuffer < size; iPlaybackBuffer++) {
+		playbackBuffer[iPlaybackBuffer] = 0;
+	}
+
+	for (int iSoundBites = 0; iSoundBites < MAX_SOUND_BITES; iSoundBites++) {
+
+		wavedata_t* pSound = soundBites[iSoundBites].pSound;
+
+		if (pSound != NULL) {
+			int location = soundBites[iSoundBites].location;
+
+			//printf("location: %d\n", location);
+
+			int numSamples = pSound->numSamples;
+			short* pData = pSound->pData;
+
+			for (int iPlaybackBuffer = 0, iWaveData = location;
+					iPlaybackBuffer < size && iWaveData < numSamples;
+					iPlaybackBuffer++, iWaveData++) {
+				//printf("playbackBuffer[iPlaybackBuffer]: %d\n", playbackBuffer[iPlaybackBuffer]);
+
+				//int total = playbackBuffer[iPlaybackBuffer] + pData[iWaveData];
+
+				if (playbackBuffer[iPlaybackBuffer] + pData[iWaveData] > SHRT_MAX) {
+					playbackBuffer[iPlaybackBuffer] = SHRT_MAX;
+				} else if (playbackBuffer[iPlaybackBuffer] + pData[iWaveData] < SHRT_MIN) {
+					playbackBuffer[iPlaybackBuffer] = SHRT_MIN;
+				} else {
+					playbackBuffer[iPlaybackBuffer] = playbackBuffer[iPlaybackBuffer] + pData[iWaveData];
+				}
+				location++;
+			}
+
+			soundBites[iSoundBites].location = location;
+
+			//free slot when entire sample is played...
+			if (location >= numSamples) {
+				soundBites[iSoundBites].pSound = NULL;
+				soundBites[iSoundBites].location = 0;
+			}
+		}
+	}
+
+	pthread_mutex_unlock(&audioMutex);
 }
 
 
@@ -331,6 +343,8 @@ void* playbackThread(void* arg)
 {
 
 	while (!stopping) {
+		printf("playbackBufferSize: %lu\n", playbackBufferSize);
+
 		// Generate next block of audio
 		fillPlaybackBuffer(playbackBuffer, playbackBufferSize);
 
