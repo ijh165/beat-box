@@ -315,6 +315,12 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 				location++;
 			}
 
+			//free slot when entire sample is played...
+			if (location >= pSound->numSamples) {
+				soundBites[iSoundBites]->pSound = NULL;
+				soundBites[iSoundBites]->location = 0;
+			}
+
 			soundBites[iSoundBites]->location = location;
 		}
 	}
