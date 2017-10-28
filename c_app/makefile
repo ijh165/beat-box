@@ -1,5 +1,5 @@
 OUTDIR = ~/cmpt433/public/myApps
-EXE = retrofit-kit
+EXE = beatboxer
 
 CROSS_COMPILE = arm-linux-gnueabihf-
 CC = $(CROSS_COMPILE)gcc

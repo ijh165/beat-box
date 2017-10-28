@@ -11,6 +11,7 @@ typedef struct
 } xyz_t;
 
 void Accelerometer_init();
-xyz_t Accelerometer_getXYZVals();
+void Accelerometer_startMotionDetection();
+void Accelerometer_stopMotionDetection();
 
 #endif
