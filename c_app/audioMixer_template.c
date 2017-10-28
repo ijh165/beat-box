@@ -283,43 +283,12 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 	 *
 	 */
 
-	pthread_mutex_lock(&audioMutex);
 
-	memset(playbackBuffer, 0, size);
 
-	for (int iSoundBites = 0; iSoundBites < MAX_SOUND_BITES; iSoundBites++) {
-		wavedata_t* pSound = soundBites[iSoundBites]->pSound;
 
-		if (pSound != NULL) {
-			int location = soundBites[iSoundBites]->location;
 
-			int numSamples = pSound->numSamples;
-			short* pData = pSound->pData;
 
-			for (int iPlaybackBuffer = 0, iWaveData = 0;
-					iPlaybackBuffer < size && iWaveData < numSamples;
-					iPlaybackBuffer++, iWaveData++) {
-				int total = playbackBuffer[iPlaybackBuffer] + pData[iWaveData];
 
-				if (total > SHRT_MAX) {
-					total = SHRT_MAX;
-					break;
-				}
-
-				if (total < SHRT_MIN) {
-					total = SHRT_MIN;
-					break;
-				}
-
-				playbackBuffer[iPlaybackBuffer] = (short) total;
-				location++;
-			}
-
-			soundBites[iSoundBites]->location = location;
-		}
-	}
-
-	pthread_mutex_unlock(&audioMutex);
 }
 
 
