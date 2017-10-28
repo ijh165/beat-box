@@ -1,4 +1,4 @@
-OUTDIR = ~/cmpt433/public/myApps
+OUTDIR = $(HOME)/cmpt433/public/myApps
 EXE = beatboxer
 
 CROSS_COMPILE = arm-linux-gnueabihf-

@@ -10,6 +10,7 @@
 
 int main()
 {
+	Accelerometer_init();
 	AudioMixer_init();
 
 	wavedata_t* sampleFile = malloc(sizeof(*sampleFile));
@@ -17,24 +18,14 @@ int main()
 
 	AudioMixer_queueSound(sampleFile);
 
-	//AudioMixer_freeWaveFileData(&sampleFile);
-
-
-	while(true);
-	AudioMixer_cleanup();
-
-
-	/*Accelerometer_init();
-
 	Accelerometer_startMotionDetection();
 	UdpInterface_start();
 
-
-
 	UdpInterface_waitUntilStop();
-	Accelerometer_stopMotionDetection();*/
+	Accelerometer_stopMotionDetection();
 
-
+	AudioMixer_cleanup();
+	AudioMixer_freeWaveFileData(sampleFile);
 
 	return 0;
 }

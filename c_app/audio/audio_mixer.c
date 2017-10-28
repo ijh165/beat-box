@@ -144,6 +144,8 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 	assert(pSound->numSamples > 0);
 	assert(pSound->pData);
 
+	printf("numSamples: %d\n", pSound->numSamples);
+
 	// Insert the sound by searching for an empty sound bite spot
 	/*
 	 * REVISIT: Implement this:
@@ -157,11 +159,12 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 	 *    because the application most likely doesn't want to crash just for
 	 *    not being able to play another wave file.
 	 */
-	//pthread_mutex_lock(&audioMutex);
+
+	pthread_mutex_lock(&audioMutex);
 
 	_Bool slotFound = false;
 	for(int i = 0; i < MAX_SOUND_BITES; i++) {
-		if(soundBites[i].pSound == NULL){
+		if(soundBites[i].pSound == NULL) {
 			soundBites[i].pSound = pSound;
 			slotFound = true;
 			break;
@@ -173,7 +176,7 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 		return;
 	}
 
-	//pthread_mutex_unlock(&audioMutex);
+	pthread_mutex_unlock(&audioMutex);
 }
 
 void AudioMixer_cleanup(void)
@@ -289,7 +292,9 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 
 	pthread_mutex_lock(&audioMutex);
 
-	memset(playbackBuffer, 0, size);
+	for (int iPlaybackBuffer = 0; iPlaybackBuffer < size; iPlaybackBuffer++) {
+		playbackBuffer[iPlaybackBuffer] = 0;
+	}
 
 	for (int iSoundBites = 0; iSoundBites < MAX_SOUND_BITES; iSoundBites++) {
 
@@ -298,35 +303,35 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 		if (pSound != NULL) {
 			int location = soundBites[iSoundBites].location;
 
+			//printf("location: %d\n", location);
+
 			int numSamples = pSound->numSamples;
 			short* pData = pSound->pData;
 
 			for (int iPlaybackBuffer = 0, iWaveData = location;
 					iPlaybackBuffer < size && iWaveData < numSamples;
 					iPlaybackBuffer++, iWaveData++) {
-				int total = playbackBuffer[iPlaybackBuffer] + pData[iWaveData];
+				//printf("playbackBuffer[iPlaybackBuffer]: %d\n", playbackBuffer[iPlaybackBuffer]);
 
-				if (total > SHRT_MAX) {
-					total = SHRT_MAX;
-					break;
+				//int total = playbackBuffer[iPlaybackBuffer] + pData[iWaveData];
+
+				if (playbackBuffer[iPlaybackBuffer] + pData[iWaveData] > SHRT_MAX) {
+					playbackBuffer[iPlaybackBuffer] = SHRT_MAX;
+				} else if (playbackBuffer[iPlaybackBuffer] + pData[iWaveData] < SHRT_MIN) {
+					playbackBuffer[iPlaybackBuffer] = SHRT_MIN;
+				} else {
+					playbackBuffer[iPlaybackBuffer] = playbackBuffer[iPlaybackBuffer] + pData[iWaveData];
 				}
-
-				if (total < SHRT_MIN) {
-					total = SHRT_MIN;
-					break;
-				}
-
-				playbackBuffer[iPlaybackBuffer] = (short) total;
 				location++;
 			}
+
+			soundBites[iSoundBites].location = location;
 
 			//free slot when entire sample is played...
 			if (location >= numSamples) {
 				soundBites[iSoundBites].pSound = NULL;
 				soundBites[iSoundBites].location = 0;
 			}
-
-			soundBites[iSoundBites].location = location;
 		}
 	}
 
