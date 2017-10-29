@@ -5,6 +5,7 @@
 #include "audio_mixer.h"
 #include "beat_maker.h"
 #include "../devices/joy_stick.h"
+#include "../lib/util.h"
 
 #define DECREASE -5
 #define INCREASE 5
