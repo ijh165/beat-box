@@ -58,3 +58,21 @@ char** Util_strsplit(char* str, const char* delim, int* o_numTokens)
 
 	return tokens;
 }
+
+int Util_readValueFromFile(char* fileName)
+{
+	FILE *file = fopen(fileName, "r");
+	if (file == NULL) {
+		printf("ERROR: Unable to open file (%s) for read\n", fileName);
+		exit(-1);
+	}
+
+	// Read string (line)
+	const int max_length = 1024;
+	char buff[max_length];
+	fgets(buff, max_length, file);
+
+	fclose(file);
+	int value = buff[0] - '0';
+	return value;
+}
