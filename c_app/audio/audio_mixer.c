@@ -25,7 +25,7 @@ static short *playbackBuffer = NULL;
 
 
 // Currently active (waiting to be played) sound bites
-#define MAX_SOUND_BITES 30
+#define MAX_SOUND_BITES 300
 typedef struct {
 	// A pointer to a previously allocated sound bite (wavedata_t struct).
 	// Note that many different sound-bite slots could share the same pointer
@@ -39,7 +39,7 @@ typedef struct {
 static playbackSound_t soundBites[MAX_SOUND_BITES];
 
 // Playback threading
-void* playbackThread(void* arg);
+static void* playbackThread(void* arg);
 static _Bool stopping = false;
 static pthread_t playbackThreadId;
 static pthread_mutex_t audioMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -144,7 +144,7 @@ void AudioMixer_queueSound(wavedata_t *pSound)
 	assert(pSound->numSamples > 0);
 	assert(pSound->pData);
 
-	printf("numSamples: %d\n", pSound->numSamples);
+	//printf("numSamples: %d\n", pSound->numSamples);
 
 	// Insert the sound by searching for an empty sound bite spot
 	/*
@@ -209,15 +209,16 @@ int AudioMixer_getVolume()
 	return volume;
 }
 
+// *modified*
 // Function copied from:
 // http://stackoverflow.com/questions/6787318/set-alsa-master-volume-from-c-code
 // Written by user "trenki".
-void AudioMixer_setVolume(int newVolume)
+_Bool AudioMixer_setVolume(int newVolume)
 {
 	// Ensure volume is reasonable; If so, cache it for later getVolume() calls.
 	if (newVolume < 0 || newVolume > AUDIOMIXER_MAX_VOLUME) {
 		printf("ERROR: Volume must be between 0 and 100.\n");
-		return;
+		return false;
 	}
 	volume = newVolume;
 
@@ -241,6 +242,8 @@ void AudioMixer_setVolume(int newVolume)
     snd_mixer_selem_set_playback_volume_all(elem, volume * max / 100);
 
     snd_mixer_close(handle);
+
+    return true;
 }
 
 
@@ -339,11 +342,11 @@ static void fillPlaybackBuffer(short *playbackBuffer, int size)
 }
 
 
-void* playbackThread(void* arg)
+static void* playbackThread(void* arg)
 {
 
 	while (!stopping) {
-		printf("playbackBufferSize: %lu\n", playbackBufferSize);
+		//printf("playbackBufferSize: %lu\n", playbackBufferSize);
 
 		// Generate next block of audio
 		fillPlaybackBuffer(playbackBuffer, playbackBufferSize);

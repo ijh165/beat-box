@@ -1,31 +1,18 @@
 #include "devices/display.h"
 #include "devices/accelerometer.h"
 #include "network/udp_interface.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include "audio/audio_mixer.h"
+#include "audio/beat_maker.h"
+#include "lib/util.h"
 
-#define SOURCE_FILE "beatbox-wav-files/100060__menegass__gui-drum-splash-hard.wav"
+#define HI_HAT_CLOSED "beatbox-wav-files/100054__menegass__gui-drum-ch.wav"
 
 int main()
 {
-	Accelerometer_init();
-	AudioMixer_init();
-
-	wavedata_t* sampleFile = malloc(sizeof(*sampleFile));
-	AudioMixer_readWaveFileIntoMemory(SOURCE_FILE, sampleFile);
-
-	AudioMixer_queueSound(sampleFile);
-
-	Accelerometer_startMotionDetection();
+	BeatMaker_init();
 	UdpInterface_start();
 
 	UdpInterface_waitUntilStop();
-	Accelerometer_stopMotionDetection();
-
-	AudioMixer_cleanup();
-	AudioMixer_freeWaveFileData(sampleFile);
-
+	BeatMaker_cleanup();
 	return 0;
 }

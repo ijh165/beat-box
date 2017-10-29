@@ -24,7 +24,7 @@ npm_install:
 	cd $(DEPLOY_PATH) && npm install
 	
 clean:
-	rm -r $(DEPLOY_PATH)
+	rm -rf $(DEPLOY_PATH)
 
 # the make targets below should be run in the target device (not in the host)
 
