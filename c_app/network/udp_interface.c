@@ -72,6 +72,42 @@ static void handleCmd(char* cmd)
 			stopUdpThread();
 		}
 
+		if (strcmp(command, "get") == 0) {
+			char* option = tokens[1];
+			if (strcmp(option, "beat_mode") == 0) {
+				char responseBuffer[BUFFER_LENGTH];
+
+				mode_t beatMode = BeatMaker_getMode();
+				switch (beatMode) {
+				case NONE:
+					sprintf(responseBuffer, "none");
+					break;
+				case STANDARD_ROCK:
+					sprintf(responseBuffer, "standard_rock");
+					break;
+				case DEATH_METAL:
+					sprintf(responseBuffer, "death_metal");
+					break;
+				default:
+					break;
+				}
+
+				Udp_sendResponse(responseBuffer);
+			}
+
+			if (strcmp(option, "tempo") == 0) {
+				char responseBuffer[BUFFER_LENGTH];
+				sprintf(responseBuffer, "%d", BeatMaker_getTempo());
+				Udp_sendResponse(responseBuffer);
+			}
+
+			if (strcmp(option, "volume") == 0) {
+				char responseBuffer[BUFFER_LENGTH];
+				sprintf(responseBuffer, "%d", AudioMixer_getVolume());
+				Udp_sendResponse(responseBuffer);
+			}
+		}
+
 		if (strcmp(command, "set") == 0) {
 			char* option = tokens[1];
 			if (strcmp(option, "beat_mode") == 0) {
@@ -89,7 +125,8 @@ static void handleCmd(char* cmd)
 				int value = atoi(tokens[2]);
 				if (!BeatMaker_setTempo(value)) {
 					char responseBuffer[BUFFER_LENGTH];
-					sprintf(responseBuffer, "ERROR: Tempo must be between %d and %d.\n",
+					sprintf(responseBuffer,
+							"{\"error\": true, \"message\": \"ERROR: Tempo must be between %d and %d.\"}\n",
 							BEATMAKER_MIN_TEMPO, BEATMAKER_MAX_TEMPO);
 					Udp_sendResponse(responseBuffer);
 				}
@@ -99,7 +136,9 @@ static void handleCmd(char* cmd)
 				int value = atoi(tokens[2]);
 				if (!AudioMixer_setVolume(value)) {
 					char responseBuffer[BUFFER_LENGTH];
-					sprintf(responseBuffer, "ERROR: Volume must be between 0 and %d.\n", AUDIOMIXER_MAX_VOLUME);
+					sprintf(responseBuffer,
+							"{\"error\": true, \"message\": \"ERROR: Volume must be between 0 and %d.\"}\n",
+							AUDIOMIXER_MAX_VOLUME);
 					Udp_sendResponse(responseBuffer);
 				}
 			}
