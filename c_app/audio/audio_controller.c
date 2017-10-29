@@ -80,6 +80,7 @@ static void* audioControllerThread(void* arg)
 		else if (joyStick.JOY_STICK_CENTER == 0) {
 			changeBeat();
 		}
+		Util_sleep(0,100);
 	}
 
 	return NULL;

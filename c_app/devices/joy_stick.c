@@ -37,7 +37,6 @@ static void* joyStickThread(void* arg)
 		joyStick.JOY_STICK_LEFT = Util_readValueFromFile(JOY_STICK_LEFT_FILE);
 		joyStick.JOY_STICK_DOWN = Util_readValueFromFile(JOY_STICK_DOWN_FILE);
 		joyStick.JOY_STICK_UP = Util_readValueFromFile(JOY_STICK_UP_FILE);
-		Util_sleep(0,100);
 	}
 
 	return NULL;
