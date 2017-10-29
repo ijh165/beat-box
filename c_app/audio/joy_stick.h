@@ -20,7 +20,7 @@ typedef struct {
 } joystick;
 
 void JoyStick_init();
-void JoyStick_changeTempo();
+void JoyStick_changeTempo(int change);
 void JoyStick_changeBeat();
 void JoyStick_changeVolume(int change);
 
