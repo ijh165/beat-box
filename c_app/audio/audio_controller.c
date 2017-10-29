@@ -13,9 +13,9 @@ static pthread_t audioControllerThreadId;
 static _Bool stopping = false;
 static void* audioControllerThread(void* arg);
 
-static void AudioController_changeVolume(int change);
-static void AudioController_changeTempo(int change);
-static void AudioController_changeBeat(void);
+static void changeVolume(int change);
+static void changeTempo(int change);
+static void changeBeat(void);
 
 void AudioController_init(void)
 {
@@ -36,19 +36,19 @@ void AudioController_cleanup(void)
 	fflush(stdout);
 }
 
-static void AudioController_changeVolume(int change)
+static void changeVolume(int change)
 {
 	int currentVolume = AudioMixer_getVolume();
 	AudioMixer_setVolume(currentVolume + change);
 }
 
-static void AudioController_changeTempo(int change)
+static void changeTempo(int change)
 {
 	int currentTempo = BeatMaker_getTempo();
 	BeatMaker_setTempo(currentTempo + change);
 }
 
-static void AudioController_changeBeat(void)
+static void changeBeat(void)
 {
 	mode_t currentMode = BeatMaker_getMode();
 	if (currentMode == NONE) {
@@ -66,19 +66,19 @@ static void* audioControllerThread(void* arg)
 {
 	while(!stopping) {
 		if (joyStick.JOY_STICK_UP == 0) {
-			AudioController_changeVolume(INCREASE);
+			changeVolume(INCREASE);
 		}
 		else if (joyStick.JOY_STICK_DOWN == 0) {
-			AudioController_changeVolume(DECREASE);
+			changeVolume(DECREASE);
 		}
 		else if (joyStick.JOY_STICK_RIGHT == 0) {
-			AudioController_changeTempo(INCREASE);
+			changeTempo(INCREASE);
 		}
 		else if (joyStick.JOY_STICK_LEFT == 0) {
-			AudioController_changeTempo(DECREASE);
+			changeTempo(DECREASE);
 		}
 		else if (joyStick.JOY_STICK_CENTER == 0) {
-			AudioController_changeBeat();
+			changeBeat();
 		}
 	}
 
