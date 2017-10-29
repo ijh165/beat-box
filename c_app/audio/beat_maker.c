@@ -109,6 +109,16 @@ _Bool BeatMaker_setTempo(int newTempo)
 	return true;
 }
 
+mode_t BeatMaker_getMode()
+{
+	return beatMode;
+}
+
+int BeatMaker_getTempo()
+{
+	return tempo;
+}
+
 void BeatMaker_cleanup()
 {
 	// Stop the PCM generation thread

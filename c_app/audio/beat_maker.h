@@ -15,6 +15,8 @@ void BeatMaker_init();
 void BeatMaker_setMode(mode_t newBeatMode);
 _Bool BeatMaker_setTempo(int newTempo);
 
+mode_t BeatMaker_getMode();
+int BeatMaker_getTempo();
 
 void BeatMaker_cleanup();
 
