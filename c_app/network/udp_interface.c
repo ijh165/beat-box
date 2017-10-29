@@ -1,8 +1,9 @@
+#include "../audio/audio_mixer.h"
+#include "../audio/beat_maker.h"
 #include "../devices/accelerometer.h"
 #include "../lib/util.h"
 #include "../network/udp_interface.h"
 #include "../network/udp.h"
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,9 +66,43 @@ static void handleCmd(char* cmd)
 	char** tokens = Util_strsplit(cmd, WHITE_SPACE, &numTokens);
 
 	if (numTokens > 0) {
-		if (strcmp(tokens[0], "stop") == 0) {
+		char* command = tokens[0];
+		if (strcmp(command, "stop") == 0) {
 			Udp_sendResponse("Program terminating.\n");
 			stopUdpThread();
+		}
+
+		if (strcmp(command, "set") == 0) {
+			char* option = tokens[1];
+			if (strcmp(option, "beat_mode") == 0) {
+				char* value = tokens[2];
+				if (strcmp(value, "none") == 0) {
+					BeatMaker_setMode(NONE);
+				} else if (strcmp(value, "standard_rock") == 0) {
+					BeatMaker_setMode(STANDARD_ROCK);
+				} else if (strcmp(value, "death_metal") == 0) {
+					BeatMaker_setMode(DEATH_METAL);
+				}
+			}
+
+			if (strcmp(option, "tempo") == 0) {
+				int value = atoi(tokens[2]);
+				if (!BeatMaker_setTempo(value)) {
+					char responseBuffer[BUFFER_LENGTH];
+					sprintf(responseBuffer, "ERROR: Tempo must be between %d and %d.\n",
+							BEATMAKER_MIN_TEMPO, BEATMAKER_MAX_TEMPO);
+					Udp_sendResponse(responseBuffer);
+				}
+			}
+
+			if (strcmp(option, "volume") == 0) {
+				int value = atoi(tokens[2]);
+				if (!AudioMixer_setVolume(value)) {
+					char responseBuffer[BUFFER_LENGTH];
+					sprintf(responseBuffer, "ERROR: Volume must be between 0 and %d.\n", AUDIOMIXER_MAX_VOLUME);
+					Udp_sendResponse(responseBuffer);
+				}
+			}
 		}
 	}
 
