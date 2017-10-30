@@ -16,7 +16,8 @@ LFLAGS = -L$(HOME)/cmpt433/public/asound_lib_BBB
 
 SRC = main.c devices/accelerometer.c devices/joy_stick.c lib/util.c lib/i2c.c \
 	network/udp.c  network/udp_interface.c \
-	audio/audio_mixer.c audio/beat_maker.c audio/audio_controller.c
+	audio/audio_mixer.c audio/beat_maker.c \
+	input/audio_controller.c
 	 
 OBJ = $(addsuffix .o, $(basename $(SRC)))
 

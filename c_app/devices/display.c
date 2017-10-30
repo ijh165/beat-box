@@ -1,14 +1,13 @@
 #include "../devices/display.h"
-#include "../lib/defn.h"
 #include "../lib/i2c.h"
 #include "../lib/util.h"
+#include "../lib/common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <pthread.h>
 
-#define GPIO_EXPORT "/sys/class/gpio/export"
 #define GPIO_PIN_61_DIRECTION "/sys/class/gpio/gpio61/direction"
 #define GPIO_PIN_44_DIRECTION "/sys/class/gpio/gpio44/direction"
 #define GPIO_PIN_61_VAL "/sys/class/gpio/gpio61/value"

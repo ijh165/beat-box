@@ -1,10 +1,10 @@
 #include "../devices/pot.h"
-#include "../lib/defn.h"
 #include "../lib/util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "../lib/common.h"
 
 #define A2D_FILE_VOLTAGE0 "/sys/bus/iio/devices/iio:device0/in_voltage0_raw"
 #define PIECEWISE_NUM_POINTS 10
