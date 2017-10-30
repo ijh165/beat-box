@@ -6,6 +6,8 @@
 #include <string.h>
 #include <time.h>
 
+#define NS_PER_S 1000000000
+
 void Util_readFileToBuffer(char* fileName, char* buffer, int bufferSize)
 {
 	FILE* file = fopen(fileName, "r");
@@ -37,6 +39,11 @@ void Util_writeToFile(char* fileName, char* strToWrite)
 
 void Util_sleep(long seconds, long nanoseconds)
 {
+	if (nanoseconds > NS_PER_S - 1) {
+		seconds += nanoseconds / NS_PER_S;
+		nanoseconds %= NS_PER_S;
+	}
+
 	struct timespec reqDelay = {seconds, nanoseconds};
 	nanosleep(&reqDelay, (struct timespec *) NULL);
 }

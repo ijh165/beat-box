@@ -119,6 +119,21 @@ int BeatMaker_getTempo()
 	return tempo;
 }
 
+void BeatMaker_playBass()
+{
+	AudioMixer_queueSound(&bassSample);
+}
+
+void BeatMaker_playSnare()
+{
+	AudioMixer_queueSound(&snareSample);
+}
+
+void BeatMaker_playHiHatClosed()
+{
+	AudioMixer_queueSound(&hiHatClosedSample);
+}
+
 void BeatMaker_cleanup()
 {
 	// Stop the PCM generation thread
@@ -126,7 +141,11 @@ void BeatMaker_cleanup()
 	pthread_join(drumBeatThreadId, NULL);
 
 	AudioMixer_cleanup();
+	AudioMixer_freeWaveFileData(&splashSample);
 	AudioMixer_freeWaveFileData(&hiHatClosedSample);
+	AudioMixer_freeWaveFileData(&hiHatOpenedSample);
+	AudioMixer_freeWaveFileData(&snareSample);
+	AudioMixer_freeWaveFileData(&bassSample);
 }
 
 static void* drumBeatThread(void* arg)

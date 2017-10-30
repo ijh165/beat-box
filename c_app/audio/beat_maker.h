@@ -18,6 +18,10 @@ _Bool BeatMaker_setTempo(int newTempo);
 mode_t BeatMaker_getMode();
 int BeatMaker_getTempo();
 
+void BeatMaker_playBass();
+void BeatMaker_playSnare();
+void BeatMaker_playHiHatClosed();
+
 void BeatMaker_cleanup();
 
 #endif
