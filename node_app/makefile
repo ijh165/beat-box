@@ -1,8 +1,8 @@
 # Deploy this Node.js project to the public folder
-PROJECT_NAME=BeatBoxServer
-DEPLOY_PATH= $(HOME)/cmpt433/public/node/$(PROJECT_NAME)-copy
+PROJECT_NAME=beatbox-server
+DEPLOY_PATH= $(HOME)/cmpt433/public/myApps/$(PROJECT_NAME)-copy
 
-all: deploy node_install
+all: deploy npm_install
 
 deploy:
 	@echo 'COPYING THE NODE.JS FILES TO $(DEPLOY_PATH)'
@@ -15,7 +15,7 @@ deploy:
 	@echo 'NOTE: On the host, in $(DEPLOY_PATH), it is best to run: npm install'
 	@echo '      Or, just run the node_install target in this makefile.'
 
-node_install:
+npm_install:
 	@echo ''
 	@echo ''
 	@echo 'INSTALLING REQUIRED NODE PACKAGES'

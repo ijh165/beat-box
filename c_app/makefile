@@ -1,5 +1,5 @@
 OUTDIR = $(HOME)/cmpt433/public/myApps
-EXE = beatboxer
+EXE = beatbox
 
 CROSS_COMPILE = arm-linux-gnueabihf-
 CC = $(CROSS_COMPILE)gcc

@@ -4,7 +4,7 @@
 //
 // Launch server with:
 //   $ node server.js
-var PORT_NUMBER = 3042;
+var PORT_NUMBER = 8088;
 
 
 var http = require('http');
@@ -17,11 +17,12 @@ var mime = require('mime');
  */
 var server = http.createServer(function(request, response) {
 	var filePath = false;
+	var url = request.url.replace('..', '');
 	
-	if (request.url == '/') {
+	if (url == '/') {
 		filePath = 'public/index.html';
 	} else {
-		filePath = 'public' + request.url;
+		filePath = 'public' + url;
 	}
 	
 	var absPath = './' + filePath;
@@ -29,7 +30,7 @@ var server = http.createServer(function(request, response) {
 });
 
 server.listen(PORT_NUMBER, function() {
-	console.log("Server listeneing on port " + PORT_NUMBER);
+	console.log("Server listening on port " + PORT_NUMBER);
 });
 
 function serveStatic(response, absPath) {
@@ -56,9 +57,9 @@ function send404(response) {
 
 function sendFile(response, filePath, fileContents) {
 	response.writeHead(
-			200,
-			{"content-type": mime.lookup(path.basename(filePath))}
-		);
+		200,
+		{"content-type": mime.lookup(path.basename(filePath))}
+	);
 	response.end(fileContents);
 }
 
