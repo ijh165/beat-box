@@ -43,9 +43,9 @@ xyz_t Accelerometer_getXYZVals()
 	printf("OUT_Z_LSB = 0x%02x\n", bytes[OUT_Z_LSB]);
 	printf("\n");*/
 
-	int16_t x = (bytes[OUT_X_MSB] << 8) | (bytes[OUT_X_LSB]) / 16;
-	int16_t y = (bytes[OUT_Y_MSB] << 8) | (bytes[OUT_Y_LSB]) / 16;
-	int16_t z = (bytes[OUT_Z_MSB] << 8) | (bytes[OUT_Z_LSB]) / 16;
+	int16_t x = (bytes[OUT_X_MSB] << 8) | (bytes[OUT_X_LSB]);
+	int16_t y = (bytes[OUT_Y_MSB] << 8) | (bytes[OUT_Y_LSB]);
+	int16_t z = (bytes[OUT_Z_MSB] << 8) | (bytes[OUT_Z_LSB]);
 
 	//build return struct
 	xyz_t vals;
