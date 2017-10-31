@@ -6,6 +6,9 @@ var socket = io.connect();
 
 var AUDIO_INFO_INTERVAL = 800;
 var UPTIME_INTERVAL = 1000;
+var CHECK_INTERVAL = 5000;
+var DECREASE = -5
+var INCREASE = 5
 
 // Make connection to server when web page is fully loaded.
 $(document).ready(function() {
@@ -23,6 +26,10 @@ $(document).ready(function() {
 		socket.emit('uptime');
 	}, UPTIME_INTERVAL);
 
+	window.setInterval(function() {
+		socket.emit('beatbox_app_check');
+	}, CHECK_INTERVAL);
+	
 	listenSocketEvents();
 });
 
@@ -42,24 +49,24 @@ function bindModeControlEvents() {
 
 function bindVolumeControlEvents() {
 	$('#volumeUp').click(function() {
-		var newVolume = parseInt($('#volume-id').prop('value')) + 1;
+		var newVolume = parseInt($('#volume-id').prop('value')) + INCREASE;
 		socket.emit('set_volume', newVolume);
 	});
 	
 	$('#volumeDown').click(function() {
-		var newVolume = parseInt($('#volume-id').prop('value')) - 1;
+		var newVolume = parseInt($('#volume-id').prop('value')) + DECREASE;
 		socket.emit('set_volume', newVolume);
 	});
 }
 
 function bindTempoControlEvents() {
 	$('#tempoUp').click(function() {
-		var newTempo = parseInt($('#tempo-id').prop('value')) + 1;
+		var newTempo = parseInt($('#tempo-id').prop('value')) + INCREASE;
 		socket.emit('set_tempo', newTempo);
 	});
 	
 	$('#tempoDown').click(function() {
-		var newTempo = parseInt($('#tempo-id').prop('value')) - 1;
+		var newTempo = parseInt($('#tempo-id').prop('value')) + DECREASE;
 		socket.emit('set_tempo', newTempo);
 	});
 }
@@ -97,7 +104,7 @@ function listenSocketEvents() {
 		$('#error-text').html('SERVER ERROR: Timed out communicating to beatbox app. Is it running?');
 	});
 	
-	socket.on('response_recieved', function(error) {
+	socket.on('beatbox_app_ok', function(error) {
 		$('#error-box').hide();
 	});
 	

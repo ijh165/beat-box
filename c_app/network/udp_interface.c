@@ -15,9 +15,11 @@
 #define WHITE_SPACE " \t\r\n\a"
 
 // commands
+#define STATUS_CMD "status"
+#define STOP_CMD "stop"
 #define GET_CMD "get"
 #define SET_CMD "set"
-#define STOP_CMD "stop"
+
 // options
 #define MODE_OP "mode"
 #define VOLUME_OP "volume"
@@ -80,8 +82,13 @@ static void handleCmd(char* cmd)
 
 	if (numTokens > 0) {
 		char* command = tokens[0];
+
+		if (strcmp(command, STATUS_CMD) == 0) {
+			Udp_sendResponse("running");
+		}
+
 		if (strcmp(command, STOP_CMD) == 0) {
-			Udp_sendResponse("Program terminating.\n");
+			Udp_sendResponse("program terminating");
 			stopUdpThread();
 		}
 
