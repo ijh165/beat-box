@@ -11,8 +11,8 @@ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install -y nodejs``<br/>
 
 2. If you get "Error: ENOENT: no such file or directory, uv_cwd" error when 
-running the node server, clean the npm cache by the commands below and then
-try running it again.
+running the node server, clean the npm cache by running the commands below in
+another folder and then try running it again.
 
 sudo npm cache clean -f
 
