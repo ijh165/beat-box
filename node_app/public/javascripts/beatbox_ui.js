@@ -4,7 +4,7 @@
 // Web sockets: automatically establish a socket with the server
 var socket = io.connect();
 
-var AUDIO_INFO_INTERVAL = 800;
+var AUDIO_INFO_INTERVAL = 300; //make it as real time as possible
 var UPTIME_INTERVAL = 1000;
 var CHECK_INTERVAL = 5000;
 var DECREASE = -5
