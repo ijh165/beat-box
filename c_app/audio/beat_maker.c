@@ -119,9 +119,19 @@ int BeatMaker_getTempo()
 	return tempo;
 }
 
-void BeatMaker_playBass()
+void BeatMaker_playSplash()
 {
-	AudioMixer_queueSound(&bassSample);
+	AudioMixer_queueSound(&splashSample);
+}
+
+void BeatMaker_playHiHatClosed()
+{
+	AudioMixer_queueSound(&hiHatClosedSample);
+}
+
+void BeatMaker_playHiHatOpened()
+{
+	AudioMixer_queueSound(&hiHatOpenedSample);
 }
 
 void BeatMaker_playSnare()
@@ -129,9 +139,9 @@ void BeatMaker_playSnare()
 	AudioMixer_queueSound(&snareSample);
 }
 
-void BeatMaker_playHiHatClosed()
+void BeatMaker_playBass()
 {
-	AudioMixer_queueSound(&hiHatClosedSample);
+	AudioMixer_queueSound(&bassSample);
 }
 
 void BeatMaker_cleanup()

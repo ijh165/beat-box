@@ -1,6 +1,6 @@
 # Deploy this Node.js project to the public folder
-PROJECT_NAME = elevator-embedded-server
-DEPLOY_PATH = $(HOME)/cmpt433/public/node/$(PROJECT_NAME)_copy
+PROJECT_NAME=beatbox-server
+DEPLOY_PATH= $(HOME)/cmpt433/public/myApps/$(PROJECT_NAME)-copy
 
 all: deploy npm_install
 
@@ -22,27 +22,6 @@ npm_install:
 	@echo '(This may take some time)'
 	@echo ''
 	cd $(DEPLOY_PATH) && npm install
-	
+
 clean:
 	rm -rf $(DEPLOY_PATH)
-
-# the make targets below should be run in the target device (not in the host)
-
-run_server:
-	@echo ''
-	@echo ''
-	@echo 'RUNNING DEVELOPMENT SERVER'
-	@echo ''
-	npm start
-
-install_sys_dep: node_update
-	
-node_update:
-	@echo ''
-	@echo ''
-	@echo 'UPDATING NODE TO v6.11.4'
-	@echo '(This may take some time)'
-	@echo ''
-	curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-	sudo apt-get install -y nodejs
-	

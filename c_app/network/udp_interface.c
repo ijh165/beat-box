@@ -14,6 +14,28 @@
 #define BUFFER_LENGTH 1024
 #define WHITE_SPACE " \t\r\n\a"
 
+// commands
+#define STATUS_CMD "status"
+#define STOP_CMD "stop"
+#define PLAY_CMD "play"
+#define GET_CMD "get"
+#define SET_CMD "set"
+
+// options
+#define MODE_OP "mode"
+#define VOLUME_OP "volume"
+#define TEMPO_OP "tempo"
+#define SPLASH_OP "splash"
+#define HI_HAT_CLOSED_OP "hi_hat_closed"
+#define HI_HAT_OPENED_OP "hi_hat_opened"
+#define SNARE_OP "snare"
+#define BASS_OP "bass"
+
+// modes
+#define DEATH_METAL_MODE "death_metal"
+#define STANDARD_ROCK_MODE "standard_rock"
+#define NONE_MODE "none"
+
 static pthread_t* p_tid = NULL;
 static _Bool stopThread = false;
 
@@ -67,26 +89,47 @@ static void handleCmd(char* cmd)
 
 	if (numTokens > 0) {
 		char* command = tokens[0];
-		if (strcmp(command, "stop") == 0) {
-			Udp_sendResponse("Program terminating.\n");
+
+		if (strcmp(command, STATUS_CMD) == 0) {
+			Udp_sendResponse("running");
+		}
+
+		if (strcmp(command, STOP_CMD) == 0) {
+			Udp_sendResponse("program terminating");
 			stopUdpThread();
 		}
 
-		if (strcmp(command, "get") == 0) {
+		if (strcmp(command, PLAY_CMD) == 0) {
 			char* option = tokens[1];
-			if (strcmp(option, "beat_mode") == 0) {
+
+			if (strcmp(option, SPLASH_OP) == 0) {
+				BeatMaker_playSplash();
+			} else if (strcmp(option, HI_HAT_CLOSED_OP) == 0) {
+				BeatMaker_playHiHatClosed();
+			} else if (strcmp(option, HI_HAT_OPENED_OP) == 0) {
+				BeatMaker_playHiHatOpened();
+			} else if (strcmp(option, SNARE_OP) == 0) {
+				BeatMaker_playSnare();
+			} else if (strcmp(option, BASS_OP) == 0) {
+				BeatMaker_playBass();
+			}
+		}
+
+		if (strcmp(command, GET_CMD) == 0) {
+			char* option = tokens[1];
+			if (strcmp(option, MODE_OP) == 0) {
 				char responseBuffer[BUFFER_LENGTH];
 
 				mode_t beatMode = BeatMaker_getMode();
 				switch (beatMode) {
 				case NONE:
-					sprintf(responseBuffer, "none");
+					sprintf(responseBuffer, NONE_MODE);
 					break;
 				case STANDARD_ROCK:
-					sprintf(responseBuffer, "standard_rock");
+					sprintf(responseBuffer, STANDARD_ROCK_MODE);
 					break;
 				case DEATH_METAL:
-					sprintf(responseBuffer, "death_metal");
+					sprintf(responseBuffer, DEATH_METAL_MODE);
 					break;
 				default:
 					break;
@@ -95,33 +138,33 @@ static void handleCmd(char* cmd)
 				Udp_sendResponse(responseBuffer);
 			}
 
-			if (strcmp(option, "tempo") == 0) {
+			if (strcmp(option, TEMPO_OP) == 0) {
 				char responseBuffer[BUFFER_LENGTH];
 				sprintf(responseBuffer, "%d", BeatMaker_getTempo());
 				Udp_sendResponse(responseBuffer);
 			}
 
-			if (strcmp(option, "volume") == 0) {
+			if (strcmp(option, VOLUME_OP) == 0) {
 				char responseBuffer[BUFFER_LENGTH];
 				sprintf(responseBuffer, "%d", AudioMixer_getVolume());
 				Udp_sendResponse(responseBuffer);
 			}
 		}
 
-		if (strcmp(command, "set") == 0) {
+		if (strcmp(command, SET_CMD) == 0) {
 			char* option = tokens[1];
-			if (strcmp(option, "beat_mode") == 0) {
+			if (strcmp(option, MODE_OP) == 0) {
 				char* value = tokens[2];
-				if (strcmp(value, "none") == 0) {
+				if (strcmp(value, NONE_MODE) == 0) {
 					BeatMaker_setMode(NONE);
-				} else if (strcmp(value, "standard_rock") == 0) {
+				} else if (strcmp(value, STANDARD_ROCK_MODE) == 0) {
 					BeatMaker_setMode(STANDARD_ROCK);
-				} else if (strcmp(value, "death_metal") == 0) {
+				} else if (strcmp(value, DEATH_METAL_MODE) == 0) {
 					BeatMaker_setMode(DEATH_METAL);
 				}
 			}
 
-			if (strcmp(option, "tempo") == 0) {
+			if (strcmp(option, TEMPO_OP) == 0) {
 				int value = atoi(tokens[2]);
 				if (!BeatMaker_setTempo(value)) {
 					char responseBuffer[BUFFER_LENGTH];
@@ -132,7 +175,7 @@ static void handleCmd(char* cmd)
 				}
 			}
 
-			if (strcmp(option, "volume") == 0) {
+			if (strcmp(option, VOLUME_OP) == 0) {
 				int value = atoi(tokens[2]);
 				if (!AudioMixer_setVolume(value)) {
 					char responseBuffer[BUFFER_LENGTH];
