@@ -38,29 +38,29 @@ function handleCommand(socket) {
 	});
 	
 	socket.on('audio_info', function() {
-		communicateWithLocalCApp(socket, 'get mode', function (response) {
+		communicateWithLocalCApp('get mode', function (response) {
 		    socket.emit('mode_update', response);	    
 		});
 		
-		communicateWithLocalCApp(socket, 'get volume', function (response) {
+		communicateWithLocalCApp('get volume', function (response) {
 		    var volume = parseInt(response);
 		    socket.emit('volume_update', volume);		    
 		});
 		
-		communicateWithLocalCApp(socket, 'get tempo', function (response) {
+		communicateWithLocalCApp('get tempo', function (response) {
 		    var tempo = parseInt(response);
 		    socket.emit('tempo_update', tempo);		    
 		});
 	});
 	
 	socket.on('set_mode', function(mode) {
-		communicateWithLocalCApp(socket, 'set mode ' + mode, function (response) {
+		communicateWithLocalCApp('set mode ' + mode, function (response) {
 			socket.emit('mode_update', mode);
 		});
 	});
 	
 	socket.on('set_volume', function(volume) {
-		communicateWithLocalCApp(socket, 'set volume ' + volume, function (response) {
+		communicateWithLocalCApp('set volume ' + volume, function (response) {
 			var responseObj = JSON.parse(response);
 			if (!responseObj.error) {
 				socket.emit('volume_update', volume);
@@ -69,13 +69,19 @@ function handleCommand(socket) {
 	});
 	
 	socket.on('set_tempo', function(tempo) {
-		communicateWithLocalCApp(socket, 'set tempo ' + tempo, function (response) {
+		communicateWithLocalCApp('set tempo ' + tempo, function (response) {
 			var responseObj = JSON.parse(response);
 			if (!responseObj.error) {
 				socket.emit('tempo_update', tempo);
 			}
 		});
 	});
+	
+	socket.on('play_sound', function(sound) {
+		communicateWithLocalCApp('play ' + sound, function(response) {
+			//do nothing
+		});
+	})
 	
 	socket.on('beatbox_app_check', function() {
 		var TIMEOUT = 5000; // 5 s
@@ -84,7 +90,7 @@ function handleCommand(socket) {
 			socket.emit('beatbox_app_timeout');
 		}, TIMEOUT);
 		
-		communicateWithLocalCApp(socket, 'status', function (response) {
+		communicateWithLocalCApp('status', function (response) {
 			if (response === 'running') {
 				//console.log('beatbox app ok');
 				clearTimeout(errorTimer);
@@ -94,7 +100,7 @@ function handleCommand(socket) {
 	});
 };
 
-function communicateWithLocalCApp(socket, data, responseCallback) {		
+function communicateWithLocalCApp(data, responseCallback) {		
 	// Info for connecting to the local process via UDP
 	var PORT = 12345;
 	var HOST = '127.0.0.1';
@@ -118,14 +124,5 @@ function communicateWithLocalCApp(socket, data, responseCallback) {
 		var response =  message.toString('utf8');
 		responseCallback(response);
 		client.close();
-	});
-	
-	client.on('close', function() {
-		//console.log('closed');
-	});
-	
-	client.on('error', function(err) {
-		//console.log('error: ' + err);
-		socket.emit('udp_error', err);
 	});
 }

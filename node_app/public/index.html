@@ -9,7 +9,7 @@
 <body>
 <form>
 	<h1>BeagleBone Beat-Box</h1>
-	<div>by the smurfs</div>
+	<div>by the smurfs (ihoo, zyzhou)</div>
 
 	<!-- <p>This page is a partial solution to what's needed. You'll need to add some extra sections for tempo and triggering sounds via buttons.</p> -->
 	
@@ -23,11 +23,12 @@
 			<div id='mode-div'>
 				<h2>Drum Beat Selection</h2>
 				<p>Current drum beat mode is: <strong><span id="mode-id"></span></strong></p>
-				<p>
+				<p id="modes">
 					<input type="button" id="none"  value="None"/>
 					<input type="button" id="standard_rock" value="Standard Rock"/>
 					<input type="button" id="death_metal" value="Death Metal"/>
 				</p>
+				
 				<h3>Volume</h3>
 				<p>
 					<input type="button" id="volumeDown" value=" - "/>
@@ -35,12 +36,22 @@
 					<input type="button" id="volumeUp" value=" + "/>
 					(0 - 100)
 				</p>
+				
 				<h3>Tempo</h3>
 				<p>
 					<input type="button" id="tempoDown" value=" - "/>
 					<input type="text"   id="tempo-id" value="???" size="3" readonly/>
 					<input type="button" id="tempoUp" value=" + "/>
 					(60 - 300)
+				</p>
+				
+				<h2>Play Drum Sounds</h2>
+				<p id="drum-sounds">
+					<input type="button" id="splash"  value="Splash"/>
+					<input type="button" id="hi_hat_closed" value="Hi Hat Closed"/>
+					<input type="button" id="hi_hat_opened" value="Hi Hat Opened"/>
+					<input type="button" id="snare" value="Snare"/>
+					<input type="button" id="bass" value="Bass"/>
 				</p>
 			</div>
 			

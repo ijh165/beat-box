@@ -17,6 +17,7 @@ $(document).ready(function() {
 	bindModeControlEvents();
 	bindVolumeControlEvents();
 	bindTempoControlEvents();
+	bindPlayDrumSoundEvents();
 
 	window.setInterval(function() {
 		socket.emit('audio_info');
@@ -34,16 +35,8 @@ $(document).ready(function() {
 });
 
 function bindModeControlEvents() {
-	$('#none').click(function() {
-		socket.emit('set_mode', 'none');
-	});
-	
-	$('#standard_rock').click(function() {
-		socket.emit('set_mode', 'standard_rock');
-	});
-	
-	$('#death_metal').click(function() {
-		socket.emit('set_mode', 'death_metal');
+	$('#modes > input').click(function() {
+		socket.emit('set_mode', $(this).prop('id'));
 	});
 }
 
@@ -68,6 +61,12 @@ function bindTempoControlEvents() {
 	$('#tempoDown').click(function() {
 		var newTempo = parseInt($('#tempo-id').prop('value')) + DECREASE;
 		socket.emit('set_tempo', newTempo);
+	});
+}
+
+function bindPlayDrumSoundEvents() {
+	$('#drum-sounds > input').click(function() {
+		socket.emit('play_sound', $(this).prop('id'));
 	});
 }
 

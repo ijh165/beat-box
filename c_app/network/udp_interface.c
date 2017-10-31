@@ -17,6 +17,7 @@
 // commands
 #define STATUS_CMD "status"
 #define STOP_CMD "stop"
+#define PLAY_CMD "play"
 #define GET_CMD "get"
 #define SET_CMD "set"
 
@@ -24,6 +25,12 @@
 #define MODE_OP "mode"
 #define VOLUME_OP "volume"
 #define TEMPO_OP "tempo"
+#define SPLASH_OP "splash"
+#define HI_HAT_CLOSED_OP "hi_hat_closed"
+#define HI_HAT_OPENED_OP "hi_hat_opened"
+#define SNARE_OP "snare"
+#define BASS_OP "bass"
+
 // modes
 #define DEATH_METAL_MODE "death_metal"
 #define STANDARD_ROCK_MODE "standard_rock"
@@ -90,6 +97,22 @@ static void handleCmd(char* cmd)
 		if (strcmp(command, STOP_CMD) == 0) {
 			Udp_sendResponse("program terminating");
 			stopUdpThread();
+		}
+
+		if (strcmp(command, PLAY_CMD) == 0) {
+			char* option = tokens[1];
+
+			if (strcmp(option, SPLASH_OP) == 0) {
+				BeatMaker_playSplash();
+			} else if (strcmp(option, HI_HAT_CLOSED_OP) == 0) {
+				BeatMaker_playHiHatClosed();
+			} else if (strcmp(option, HI_HAT_OPENED_OP) == 0) {
+				BeatMaker_playHiHatOpened();
+			} else if (strcmp(option, SNARE_OP) == 0) {
+				BeatMaker_playSnare();
+			} else if (strcmp(option, BASS_OP) == 0) {
+				BeatMaker_playBass();
+			}
 		}
 
 		if (strcmp(command, GET_CMD) == 0) {
