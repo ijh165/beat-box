@@ -1,6 +1,9 @@
-# the smurfs
-- ihoo@sfu.ca
-- zyzhou@sfu.ca
+# Beat-Box
+
+Embedded app that plays drum beats on the BeagleBone Green.
+- C app to talk to hardware
+- Node.js + socket.io webserver for GUI
+- UDP between C app and webserver
 
 # Troubleshooting
 
@@ -17,4 +20,5 @@ another folder and then try running it again.
 sudo npm cache clean -f
 
 # References
+
 1. favicon.ico taken from here http://findicons.com/icon/421694/music
